@@ -4,7 +4,7 @@
   "description": "Vue.js integration with Rails CanCan authorization library",
   "main": "dist/vue-cancan.js",
   "scripts": {
-    "test": "mocha --require babel-core/register test/can.js",
+    "test": "mocha --require babel-core/register test/.",
     "build": "babel src/vue-cancan.js --out-file dist/vue-cancan.js"
   },
   "repository": {

@@ -42,43 +42,21 @@ describe('Vue', () => {
       });
     });
 
-    context('when create Comment', () => {
-      it('should return false when cannot destroy comment', () => {
-        assert.equal(Vue.prototype.$can('destroy', 'Comment', { user_id: 2 }), false);
-      });
-
-      it('should return false when cannot update comment', () => {
-        assert.equal(Vue.prototype.$can('update', 'Comment', { user_id: 2 }), false);
-      });
-
-      it('should return true when can create comment', () => {
-        assert.equal(Vue.prototype.$can('create', 'Comment', { user_id: 1 }), true);
-      });
-
-      it('should return false when cannot read comment', () => {
-        assert.equal(Vue.prototype.$can('read', 'Comment', { user_id: 2 }), false);
-      });
-    });
-
-    context('when read Post', () => {
+    context('when Post', () => {
       it('should return false when cannot destroy post', () => {
-        assert.equal(Vue.prototype.$can('destroy', 'Post', { user_id: 1 }), false);
+        assert.equal(Vue.prototype.$can('destroy', 'Post'), false);
       });
 
       it('should return false when cannot update post', () => {
-        assert.equal(Vue.prototype.$can('update', 'Post', { user_id: 1 }), false);
+        assert.equal(Vue.prototype.$can('update', 'Post'), false);
       });
 
       it('should return false when cannot create post', () => {
-        assert.equal(Vue.prototype.$can('create', 'Post', { user_id: 1 }), false);
+        assert.equal(Vue.prototype.$can('create', 'Post'), false);
       });
 
       it('should return true when can read post', () => {
-        assert.equal(Vue.prototype.$can('read', 'Post', { user_id: 1 }), true);
-      });
-
-      it('should return false when cannot read post', () => {
-        assert.equal(Vue.prototype.$can('read', 'Post', { user_id: 2 }), false);
+        assert.equal(Vue.prototype.$can('read', 'Post'), true);
       });
     });
   });

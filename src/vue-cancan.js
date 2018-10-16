@@ -9,12 +9,12 @@ function checkSubject(abilitySubject, checkedSubject) {
          (abilitySubject === checkedSubject);
 }
 
-function checkConditions(abilityConditions, fullCheckedSubject) {
+function checkConditions(abilityConditions, target) {
   if (!Object.keys(abilityConditions).length) return true;
   const matches = [];
 
   Object.keys(abilityConditions).forEach((key) => {
-    if (abilityConditions[key] === fullCheckedSubject[key]) {
+    if (abilityConditions[key] === target[key]) {
       matches.push(true);
     } else {
       matches.push(false);
@@ -24,31 +24,38 @@ function checkConditions(abilityConditions, fullCheckedSubject) {
 }
 
 export default {
-  $can(action, subject, fullSubject) {
-    if (fullSubject) {
-      return Boolean(this.rules.find((ability) => {
-        return ability.base_behavior &&
-               ability.subjects.find(abilitySubject => checkSubject(abilitySubject, subject)) &&
-               ability.actions.find(abilityAction => checkAction(abilityAction, action)) &&
-               checkConditions(ability.conditions, fullSubject);
-      }));
-    } else {
-      return Boolean(this.rules.find((ability) => {
-        return ability.base_behavior &&
-               ability.subjects.find(abilitySubject => checkSubject(abilitySubject, subject) &&
-               ability.actions.find(abilityAction => checkAction(abilityAction, action)));
-      }));
-    }
+  $can(action, subject) {
+    return Boolean(this.rules.find((ability) => {
+      return ability.base_behavior &&
+             ability.subjects.find(abilitySubject => checkSubject(abilitySubject, subject) &&
+             ability.actions.find(abilityAction => checkAction(abilityAction, action)));
+    }));
+  },
+  $authorize(action, subject, target) {
+    return Boolean(this.rules.find((ability) => {
+      return ability.base_behavior &&
+        ability.subjects.find(abilitySubject => checkSubject(abilitySubject, subject)) &&
+        ability.actions.find(abilityAction => checkAction(abilityAction, action)) &&
+        checkConditions(ability.conditions, target);
+    }));
   },
 
   install(Vue, options) {
     this.rules = options.rules;
 
-    Vue.prototype.$can = (action, subject, fullSubject) => this.$can(action, subject, fullSubject);
+    Vue.prototype.$can = (action, subject) => this.$can(action, subject);
+    Vue.prototype.$authorize = (action, subject, target) => this.$authorize(action, subject, target);
 
     Vue.directive('can', {
       inserted: (el, binding) => {
         if (!this.$can(Object.keys(binding.modifiers)[0], Object.keys(binding.modifiers)[1])) {
+          el.remove();
+        }
+      },
+    });
+    Vue.directive('authorize', {
+      inserted: (el, binding) => {
+        if (!this.$authorize(Object.keys(binding.modifiers)[0], Object.keys(binding.modifiers)[1], binding.value)) {
           el.remove();
         }
       },
